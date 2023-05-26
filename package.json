@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "node-fetch": "^2.6.1",
-    "node-telegram-bot-api": "^0.53.0"
+    "node-telegram-bot-api": "^0.61.0"
   }
 }

@@ -1,0 +1,6 @@
+bpos - Show BPoS information
+council - Show CR council information
+election - Show CR election status
+halving - Show Elastos halving information
+ping - Show status of CR Bot
+proposals - Show proposals in the CR council voting period
