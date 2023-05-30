@@ -1,7 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const fs = require("fs");
 //const token = fs.readFileSync(".access").toString().trim();
-const { token, dev } = require('./config.json');
+const { token, dev, test_grp, crc_group } = require('./config.json');
 const codes = require('./codes.json');
 const fetch = require("node-fetch");
 const request = require("request");
@@ -15,7 +15,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.5.3";
+const ver = "v1.5.4";
 const api_official = "https://api.elastos.io/ela";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
 let connection_ok = true;
@@ -29,10 +29,10 @@ let start_date_raw = new Date();
 
 // Create a new client instance
 const bot = new TelegramBot(token, { polling: true });
-const test_grp = "-1001845333390"; // Bot test group
-const crc_group = "-1001709678925"; // CR council group
-const elastos_main = "-1001243388272"; // elastos main chat
-const elastos_new = "-1001780081897"; // new elastos group
+//const test_grp = "-1001845333390"; // Bot test group in config.json
+//const crc_group = "-1001564031697"; // CR council group in config.json
+//const elastos_main = "-1001243388272"; // elastos main chat
+//const elastos_new = "-1001780081897"; // new elastos group
 
 let days = 0;
 let hours = 0;
@@ -227,12 +227,14 @@ bot.onText(/\/election/, async (msg, data) => {
   
   if (connection_ok) {        
     block_height = parseInt(height);
-    //block_height = 1447331;   
+    //block_height = 1437249;
     
     // Get election dates
     electionClose = parseInt(firstCouncil)+(councilTerm*(Math.trunc((block_height-parseInt(firstCouncil))/parseInt(councilTerm))+1))-transitionPeriod;
     electionStart = electionClose - electionPeriod;
     
+    if (block_height >= electionClose && block_height <= electionClose+transitionPeriod) transitionState = true; // if transition period
+    //console.log(block_height, electionClose, block_height , electionClose+transitionPeriod, transitionState);
     if (block_height > electionStart && block_height < electionClose) {
       blocksToGo = electionClose - block_height;
       electionStatus = "Election Status";
@@ -240,15 +242,11 @@ bot.onText(/\/election/, async (msg, data) => {
       if (!transitionState) {
         blocksToGo = electionStart - block_height;
       } else {
-        blocksToGo = currentCouncilEnd - block_height;
-        electionClose = currentCouncilEnd;
-        electionStart = electionClose - transitionPeriod;
+        electionStart = electionClose;
+        electionClose = electionClose + transitionPeriod;
+        blocksToGo = electionClose - block_height;
       }
       electionStatus = "Election Results";
-    }
-    
-    if (blocksToGo+transitionPeriod <= transitionPeriod) {
-      transitionState = true;
     }
     
     const secondsRemaining = blocksToGo < 0 ? 0 : blocksToGo * 2 * 60;
@@ -256,28 +254,39 @@ bot.onText(/\/election/, async (msg, data) => {
     hours = Math.floor((secondsRemaining % (60 * 60 * 24)) / (60 * 60));
     minutes = Math.floor((secondsRemaining % (60 * 60)) / 60);
     seconds =Math.floor(secondsRemaining % 60);
+    let candidates = "";
     
-    const candidates = await getCRCs("listcrcandidates");
-    if (candidates.totalcounts > 0) {
-      candidates.crcandidatesinfo.forEach((candidate) => {
-        // crcs = crcs + "{0:<20} {1}".format(key, value) + "\n"
-        let output = codes.filter(a => a.code == candidate.location);      
+    if (!transitionState) {
+      candidates = await getCRCs("listcrcandidates");
+      if (candidates.totalcounts > 0) {
+        candidates.crcandidatesinfo.forEach((candidate) => {
+          let output = codes.filter(a => a.code == candidate.location);          
+          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i> -- <b>${parseFloat(candidate.votes).toLocaleString("en", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}</b>` + "\n";
         
-        ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i> -- <b>${parseFloat(candidate.votes).toLocaleString("en", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}</b>` + "\n";
-      
-        totalVotes += parseFloat(candidate.votes);
-        /*if (candidate.Rank === 12) {
-          crcs = crcs + "\n";
-        }*/
-      });
+          totalVotes += parseFloat(candidate.votes);
+          /*if (candidate.Rank === 12) {
+            crcs = crcs + "\n";
+          }*/
+        });
+      } else {
+        ranks = "No candidate available yet";
+      }
     } else {
-      ranks = "No candidate available yet";
+      candidates = await getCRCs("listnextcrs");
+      if (candidates.totalcounts > 0) {
+        candidates.crmembersinfo.forEach((candidate) => {
+          let output = codes.filter(a => a.code == candidate.location);
+          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i>\n`;
+        });
+      } else {
+        ranks = "No candidate available yet";
+      }
     }
     
-    voted += `<b><i>Total ELA voted -- ${new Intl.NumberFormat('en-US').format(totalVotes)}</i></b>\n\n`;
+    if (!transitionState) voted += `<b><i>Total ELA voted -- ${new Intl.NumberFormat('en-US').format(totalVotes)}</i></b>\n\n`;
     
     if (ranks.length > 4096) {
       ranks = ranks.substring(1, 4096);
@@ -467,10 +476,12 @@ bot.onText(/\/proposals/, async (msg, data) => {
 });
 
 // Automated section
-bot.getMe().then(function (info) {
-  console.log((show_date ? start_date + " ":"") + `Logged in as @${info.username} on ${ver}`);
-});
 
+bot.getMe().then(function (info) {
+  const start_text = `Logged in as @${info.username} on ${ver}`;
+  console.log((show_date ? start_date + " ":"") + start_text);
+  bot.sendMessage(dev ? test_grp:crc_group, start_text, { parse_mode: "HTML" });
+});
 
 let storedAlerts = {};
 setInterval(async () => {
