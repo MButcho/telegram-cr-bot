@@ -15,7 +15,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.5.4";
+const ver = "v1.5.5";
 const api_official = "https://api.elastos.io/ela";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
 let connection_ok = true;
@@ -43,25 +43,30 @@ let block_height = "";
 
 // Basic variables
 const council = {
-  "5b6cff7a3d173c0089ee5acf": "SUNNYFENGHAN",
-  "60d094eec05ef80078cf689e": "Donald Bullers",
-  "60db5e08c05ef80078cfdb85": "Mark Xing",
-  "5b4e46dbccac490035e4072f": "Brittany Kaiser | Own Your Data",
-  "5c2f5a15f13d65008969be61": "Zhang Feng",
-  "5ee0d99f9e10fd007849e53e": "Orchard Trinity",
+  //"5b6cff7a3d173c0089ee5acf": "SUNNYFENGHAN",
+  //"60d094eec05ef80078cf689e": "Donald Bullers",
+  //"60db5e08c05ef80078cfdb85": "Mark Xing",
+  //"5b4e46dbccac490035e4072f": "Brittany Kaiser | Own Your Data",
+  //"5c2f5a15f13d65008969be61": "Zhang Feng",
+  //"5ee0d99f9e10fd007849e53e": "Orchard Trinity",
   "60cf124660cb2c00781146e2": "Elation Studios",
-  "60c444e0a9daba0078a58aed": "Ryan | Starfish Labs",
+  //"60c444e0a9daba0078a58aed": "Ryan | Starfish Labs",
   "60c4826d77d3640078f4ddfe": "Rebecca Zhu",
-  "60cff34cc05ef80078cf60e8": "SJun Song",
+  "60cff34cc05ef80078cf60e8": "Song SJun",
   "5ee045869e10fd007849e3d2": "The Strawberry Council",
-  "5c738c9a471cb3009422b42e": "Jingyu Niu",
+  //"5c738c9a471cb3009422b42e": "Jingyu Niu",
   "5b4e46dbccac490035e4072f": "Sash | Elacity 🐘",
-  "62b1dc7304223900785aabc2": "Elacity Official",
+  //"62b1dc7304223900785aabc2": "Elacity Official",
   "62a97bb904223900785a5897": "MButcho ● Nenchy",
-  "5b481442e3ffea0035f4e6e7": "DR",
-  "62b1a5c804223900785aa988": "Infi",
-  "62bc8a196705da0078a4e378": "Phantz Club",
+  //"5b481442e3ffea0035f4e6e7": "DR",
+  //"62b1a5c804223900785aa988": "Infi",
+  //"62bc8a196705da0078a4e378": "Phantz Club",
   "5d14716f43816e009415219b": "PG BAO",
+  "5d14716f43816e009415219b": "Sai",
+  "646f44e4b4fcd0007865382c": "ⓗwξdini • 4hm3d",
+  "": "Bocheng Zhang",
+  "": "gelaxy",
+  "": "tyrolee8848",
 };
 
 // Command section
@@ -464,7 +469,7 @@ bot.onText(/\/proposals/, async (msg, data) => {
       msg_text += "\n";
       
       // display in 9 proposals batches
-      if (index % max_proposals === 0) {
+      if (active.length < 9 || index % max_proposals === 0) {
         bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
         msg_text = "";
       }
