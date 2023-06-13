@@ -1,7 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const fs = require("fs");
 //const token = fs.readFileSync(".access").toString().trim();
-const { token, dev } = require('./config.json');
+const { token, dev, test_grp, crc_group } = require('./config.json');
 const codes = require('./codes.json');
 const fetch = require("node-fetch");
 const request = require("request");
@@ -29,10 +29,10 @@ let start_date_raw = new Date();
 
 // Create a new client instance
 const bot = new TelegramBot(token, { polling: true });
-const test_grp = "-1001845333390"; // Bot test group
-const crc_group = "-1001709678925"; // CR council group
-const elastos_main = "-1001243388272"; // elastos main chat
-const elastos_new = "-1001780081897"; // new elastos group
+//const test_grp = "-1001845333390"; // Bot test group in config.json
+//const crc_group = "-1001564031697"; // CR council group in config.json
+//const elastos_main = "-1001243388272"; // elastos main chat
+//const elastos_new = "-1001780081897"; // new elastos group
 
 let days = 0;
 let hours = 0;
@@ -476,10 +476,12 @@ bot.onText(/\/proposals/, async (msg, data) => {
 });
 
 // Automated section
-bot.getMe().then(function (info) {
-  console.log((show_date ? start_date + " ":"") + `Logged in as @${info.username} on ${ver}`);
-});
 
+bot.getMe().then(function (info) {
+  const start_text = `Logged in as @${info.username} on ${ver}`;
+  console.log((show_date ? start_date + " ":"") + start_text);
+  bot.sendMessage(dev ? test_grp:crc_group, start_text, { parse_mode: "HTML" });
+});
 
 let storedAlerts = {};
 setInterval(async () => {
