@@ -66,7 +66,7 @@ const council = {
   "646f44e4b4fcd0007865382c": "ⓗwξdini • 4hm3d",
   "": "Bocheng Zhang",
   "": "gelaxy",
-  "": "tyrolee8848",
+  "": "tyrolee8848"
 };
 
 // Command section
