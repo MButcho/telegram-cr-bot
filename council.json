@@ -1,0 +1,71 @@
+{ 
+  "crc_members": [
+  {
+    "did" : "iTNjRmDdfxuKd7t3QsRCEjEsmDBZApbsRU",
+    "nickname" : "Bocheng Zhang",
+    "t_uname" : "@Bocheng0000",
+    "cr_id" : "5bfbeac7174a6a008914e482"
+  },{
+    "did" : "if4ApisvFmMQTsBBeibYj8RYY8T6zKU5v5",
+    "nickname" : "Elation Studios",
+    "t_uname" : "@Fox_Elation",
+    "cr_id" : "60cf124660cb2c00781146e2"
+  },{
+    "did" : "ioT4TdvMG5AU5QxCHt59bTGLU5ZWaMRSXc",
+    "nickname" : "MButcho • Nenchy",
+    "t_uname" : "@MButcho & @Nenchy",
+    "cr_id" : "62a97bb904223900785a5897"
+  },{
+    "did" : "idgYYMcKBBFJ4DtGZ57w9psrUW4hkNsfDd",
+    "nickname" : "PG BAO",
+    "t_uname" : "@PGtheGreat",
+    "cr_id" : "5d14716f43816e009415219b"
+  },{
+    "did" : "icaVPz8nY7Y7LKjpJxmzWxCG5F3CEV6hnt",
+    "nickname" : "Rebecca Zhu",
+    "t_uname" : "@Rebecca_Zhu",
+    "cr_id" : "60c4826d77d3640078f4ddfe"
+  },{
+    "did" : "ihQJM8FLrtv6FRDRYX8QJvHHEQRig3QDRR",
+    "nickname" : "Sai",
+    "t_uname" : "@CryptoNovice10",
+    "cr_id" : "5bbbb9df9f6fb200897971b2"
+  },{
+    "did" : "inpCykPj1JMroJfjFvDAGnEGUCGGG3ptwQ",
+    "nickname" : "Elacity Official",
+    "t_uname" : "@sash_mit",
+    "//cr_id" : "5b4e46dbccac490035e4072f",
+    "cr_id" : "62b1dc7304223900785aabc2"
+  },{
+    "did" : "ifFGHBuoAbT4Hk6uHn8vsQn5et7KExyMUZ",
+    "nickname" : "Song SJun",
+    "t_uname" : "@songsjun",
+    "cr_id" : "60cff34cc05ef80078cf60e8"
+  },{
+    "did" : "ioe6q6iXHvMEmdBEB4wpd1WGyrgEuttw93",
+    "nickname" : "The Strawberry Council",
+    "t_uname" : "@Sir_Kahuna & @MarkEBlairMD",
+    "cr_id" : "5ee045869e10fd007849e3d2"
+  },{
+    "did" : "iWHbp1TeN7p9pUWKRotkkyC3Cm2cnmrpXS",
+    "nickname" : "gelaxy",
+    "t_uname" : "Zehua",
+    "cr_id" : "648b0bcfb4fcd00078666547"
+  },{
+    "did" : "iXwDRYbriH9Zt4Haj5m3CGbNrbMUo1yusQ",
+    "nickname" : "tyrolee8848",
+    "t_uname" : "@Tyro_Lee",
+    "cr_id" : "648b1e537674cf0078402c6b"
+  },{
+    "did" : "in1aUKA5WfqdD6S2DAatBEKwJ3om98J2PR",
+    "nickname" : "ⓗwΞdini • 4HM3D",
+    "t_uname" : "@ELA_2822 & @ahm333d",
+    "cr_id" : "646f44e4b4fcd0007865382c"
+  }],
+  "crc_sec": {
+    "did" : "ijQQKQuLPaAGewBQdHuhp9G3gsuJeqAXu8",
+    "nickname" : "Cassie Zhang",
+    "t_uname" : "@Cassie_ZH",
+    "cr_id" : "5bfcde6b459a3c008972cd39"
+  }
+}

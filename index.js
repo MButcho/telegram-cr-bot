@@ -2,26 +2,32 @@ const TelegramBot = require("node-telegram-bot-api");
 const fs = require("fs");
 //const token = fs.readFileSync(".access").toString().trim();
 const { token, dev, test_grp, crc_group } = require('./config.json');
+const { crc_members, crc_sec } = require('./council.json');
 const codes = require('./codes.json');
 const fetch = require("node-fetch");
 const request = require("request");
+
 let loop = false;
 let check_mins = 5;
 let show_date = false;
+let show_log_msg = false;
 if (dev) {
   check_mins = 0.1;
   show_date = true;
+  show_log_msg = true;
 }
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.5.5";
+const ver = "v1.6.0";
 const api_official = "https://api.elastos.io/ela";
+const eid_official = "https://api.elastos.io/eid";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
 let connection_ok = true;
 const err_msg = "API is currently in down, please try again later ...";
 let all_voted = '😎 Everyone voted! Well done!\n\u200b';
 const max_proposals = 9;
+const blocks_proposal = 5040;
 
 // Bot start date
 let start_date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
@@ -40,34 +46,6 @@ let minutes = 0;
 let seconds = 0;
 let height = 0;
 let block_height = "";
-
-// Basic variables
-const council = {
-  "60cf124660cb2c00781146e2": "Elation Studios",
-  "60c4826d77d3640078f4ddfe": "Rebecca Zhu",
-  "60cff34cc05ef80078cf60e8": "Song SJun",
-  "5ee045869e10fd007849e3d2": "The Strawberry Council",
-  "5b4e46dbccac490035e4072f": "Sash | Elacity 🐘",
-  "62a97bb904223900785a5897": "MButcho ● Nenchy",
-  "5d14716f43816e009415219b": "PG BAO",
-  "5d14716f43816e009415219b": "Sai",
-  "646f44e4b4fcd0007865382c": "ⓗwξdini • 4hm3d",
-  "": "Bocheng Zhang",
-  "": "gelaxy",
-  "": "tyrolee8848",
-  //"5b6cff7a3d173c0089ee5acf": "SUNNYFENGHAN",
-  //"60d094eec05ef80078cf689e": "Donald Bullers",
-  //"60db5e08c05ef80078cfdb85": "Mark Xing",
-  //"5b4e46dbccac490035e4072f": "Brittany Kaiser | Own Your Data",
-  //"5c2f5a15f13d65008969be61": "Zhang Feng",
-  //"5ee0d99f9e10fd007849e53e": "Orchard Trinity",
-  //"60c444e0a9daba0078a58aed": "Ryan | Starfish Labs",
-  //"5c738c9a471cb3009422b42e": "Jingyu Niu",
-  //"62b1dc7304223900785aabc2": "Elacity Official",
-  //"5b481442e3ffea0035f4e6e7": "DR",
-  //"62b1a5c804223900785aa988": "Infi",
-  //"62bc8a196705da0078a4e378": "Phantz Club",  
-};
 
 // Command section
 bot.onText(/\/ping/, async (msg, data) => {
@@ -262,7 +240,7 @@ bot.onText(/\/election/, async (msg, data) => {
     let candidates = "";
     
     if (!transitionState) {
-      candidates = await getCRCs("listcrcandidates");
+      candidates = await getData("listcrcandidates");
       if (candidates.totalcounts > 0) {
         candidates.crcandidatesinfo.forEach((candidate) => {
           let output = codes.filter(a => a.code == candidate.location);          
@@ -280,7 +258,7 @@ bot.onText(/\/election/, async (msg, data) => {
         ranks = "No candidate available yet";
       }
     } else {
-      candidates = await getCRCs("listnextcrs");
+      candidates = await getData("listnextcrs");
       if (candidates.totalcounts > 0) {
         candidates.crmembersinfo.forEach((candidate) => {
           let output = codes.filter(a => a.code == candidate.location);
@@ -359,7 +337,7 @@ bot.onText(/\/council/, async (msg, data) => {
     minutes = Math.floor((secsCurrentCouncil % (60 * 60)) / 60);
     seconds = Math.floor(secsCurrentCouncil % 60);
     
-    const crc = await getCRCs("listcurrentcrs");
+    const crc = await getData("listcurrentcrs");
     crc.crmembersinfo.forEach((candidate) => {
       // crcs = crcs + "{0:<20} {1}".format(key, value) + "\n"
       let output = codes.filter(a => a.code == candidate.location);      
@@ -427,8 +405,9 @@ bot.onText(/\/proposals/, async (msg, data) => {
       let abstention = 0;
       let undecideds = [];
       let unchained = [];
-
+      //let vote_log = '';
       item.voteResult.forEach((vote) => {
+        //console.log(JSON.stringify(vote));
         if (vote.value === "support" && vote.status === "chained") support++;
         if (vote.value === "reject" && vote.status === "chained") reject++;
         if (vote.value === "undecided") {
@@ -437,10 +416,14 @@ bot.onText(/\/proposals/, async (msg, data) => {
         }
         if (vote.value === "abstention" && vote.status === "chained") abstention++;
         if (vote.value !== "undecided" && vote.status === "unchain") {
-          unchained.push(`${council[vote.votedBy]} voted ${vote.value} but did not chain the vote`);
+          let value = getCRC(vote.votedBy, "nickname");
+          unchained.push(`${value} voted ${vote.value} but did not chain the vote`);
         }
+        
+        //let test_txt = getCRC(vote.votedBy, "nickname");
+        //vote_log += `${test_txt} - ${vote.reason}\n`;
       });
-
+      //console.log(vote_log);
       let unchainedList = '';
         if (unchained.length > 0) {
         unchained.forEach((warning) => {
@@ -451,7 +434,8 @@ bot.onText(/\/proposals/, async (msg, data) => {
       let undecidedList = '';
       if (undecideds.length !== 0) {
         undecideds.forEach((member) => {
-          undecidedList += `${council[member]}\n`;
+          let value = getCRC(member, "t_uname");
+          undecidedList += `${value}\n`;          
         });
       };
               
@@ -459,7 +443,7 @@ bot.onText(/\/proposals/, async (msg, data) => {
       
       if (unchained.length = 0) voting_status += '\u200b';
       //proposals += `<i><a href='https://www.cyberrepublic.org/proposals/${item._id}'>View on Cyber Republic website</a></i>`;
-      msg_text += `<b>Council Votes:</b>\n${voting_status}`; 
+      msg_text += `<b>Voting Status:</b>\n${voting_status}`; 
       if (undecidedList.length > 0) {
         msg_text += `\n⚠ <b>Not Voted Yet:</b>\n${undecidedList}`;
       } else {
@@ -480,12 +464,95 @@ bot.onText(/\/proposals/, async (msg, data) => {
   }  
 });
 
+/*bot.onText(/\/test/, async (msg, data) => {
+  let command_date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+  
+  console.log((show_date ? command_date + " ":"") + `Proposals command triggered`);
+  const chatId = msg.chat.id;
+  
+  height = await blockHeight();
+  
+  let msg_text = "";
+  let index = 0;
+  proposals = await getData("listcrproposalbasestate");
+  if (proposals.totalcounts > 0) {
+    proposals.proposalbasestates.forEach(async (proposal) => {
+      index++;
+      let secondsRemaining = 0;
+      if (connection_ok) {
+        secondsRemaining =
+          parseFloat((proposal.registerHeight + blocks_proposal)) - parseFloat(height) < 0
+            ? 0
+            : (parseFloat((proposal.registerHeight) + blocks_proposal)- parseFloat(height)) * 2 * 60;
+      }
+      days = Math.floor(secondsRemaining / (60 * 60 * 24));
+      hours = Math.floor((secondsRemaining % (60 * 60 * 24)) / (60 * 60));
+      minutes = Math.floor((secondsRemaining % (60 * 60)) / 60);
+      
+      let proposerName = await getName(proposal.proposerDID);
+      
+      msg_text += `<b>${index}. ${proposal.proposalTitle}</b>\n`;
+      if (proposerName != proposal.proposerDID) msg_text += `<b>Proposed by:</b> ${proposerName}\n`;
+      msg_text += `<b>Time remaining:</b> ${days} days, ${hours} hours, ${minutes} minutes\n`;
+            
+      let approve = 0;
+      let reject = 0;
+      let undecided = 0;
+      let abstain = 0;
+      let undecideds = [];
+      
+      let crvotes = Object.entries(proposal.crvotes);
+      crc_members.forEach((crc) => {
+        let found = false;
+        crvotes.forEach((crvote) => {
+          if (crvote[0] == crc.did) {
+            found = true;
+            if (crvote[1] == "approve") approve++;
+            if (crvote[1] == "reject") reject++;
+            if (crvote[1] == "abstain") abstain++;
+          }
+        });
+        if (!found) {
+          undecideds.push(crc.nickname);
+          undecided++;
+        }
+      });
+      
+      let undecidedList = '';
+      if (undecideds.length !== 0) {
+        for(const name of undecideds) {
+          //let name = await getName(did);
+          undecidedList += `${name}\n`;
+        }
+      }
+      
+      let voting_status = `✅  Approve - <b>${approve}</b>\n❌  Reject - <b>${reject}</b>\n🔘  Abstain - <b>${abstain}</b>\n⚠  Undecided - <b>${undecided}</b>\n\u200b`;
+      msg_text += `<b>Council Votes:</b>\n${voting_status}`;
+      
+      if (undecidedList.length > 0) {
+        msg_text += `\n⚠ <b>Not Voted Yet:</b>\n${undecidedList}`;
+      } else {
+        msg_text += `\n✅ <b>Voting</b>\n${all_voted}`;
+      }
+      
+      // display in 9 proposals batches
+      if (proposals.proposalbasestates.length < 9 || index % max_proposals === 0) {
+        bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+        msg_text = "";
+      }
+    });
+  } else {
+    msg_text += `<b>There are currently no proposals in the council voting period</b>`;
+    bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  }
+});*/
+
 // Automated section
 
 bot.getMe().then(function (info) {
   const start_text = `Logged in as @${info.username} on ${ver}`;
   console.log((show_date ? start_date + " ":"") + start_text);
-  bot.sendMessage(dev ? test_grp:crc_group, start_text, { parse_mode: "HTML" });
+  if (show_log_msg) bot.sendMessage(dev ? test_grp:crc_group, start_text, { parse_mode: "HTML" });
 });
 
 let storedAlerts = {};
@@ -525,11 +592,12 @@ setInterval(async () => {
           }
           if (vote.value === "abstention" && vote.status === "chained") abstention++;
           if (vote.value !== "undecided" && vote.status === "unchain") {
-            unchained.push(`${council[vote.votedBy]} voted ${vote.value} but did not chain the vote`);
+            let value = getCRC(vote.votedBy, "nickname");
+            unchained.push(`${value} voted ${vote.value} but did not chain the vote`);
           }
         });
         
-        let voting_status = `✅  Support - <b>${support}</b>\n❌  Reject - <b>${reject}</b>\n🔘  Abstain - <b>${abstention}</b>\n⚠  Undecided - <b>${undecided}</b>\n\u200b`;
+        let voting_status = `✅  Support - <b>${support}</b>\n❌  Reject - <b>${reject}</b>\n🔘  Abstain - <b>${abstention}</b>\n⚠  Undecided - <b>${undecided}</b>\n`;
         
         let unchainedList = '';
         if (unchained.length > 0) {
@@ -541,11 +609,12 @@ setInterval(async () => {
         let failedList = '';
         if (undecideds.length !== 0) {
           undecideds.forEach((member) => {
-            undecidedList += `${council[member]}\n`;
-            failedList += `${council[member]} ☹\n`;
+            let value = getCRC(member, "t_uname");
+            undecidedList += `${value}\n`;          
+            failedList += `${value}\n`;          
           });
         };
-
+        
         let _message = "";
         let description = "";
         let show_unchained = false;
@@ -561,21 +630,21 @@ setInterval(async () => {
           storedAlerts[item._id] = 7;
         } else if (blocksRemaining < 3600 && blocksRemaining > 3550) {
           if (storedAlerts[item._id] === 5) return;
-          description = '👌 Reminder! There are *5 days* remaining to vote on proposal';
+          description = '👌 Reminder! There are <i>5 days</i> remaining to vote on proposal';
           storedAlerts[item._id] = 5;
         } else if (blocksRemaining < 2160 && blocksRemaining > 2110) {
           if (storedAlerts[item._id] === 3) return;
-          description = '👉 Hey you! 👈 There are *3 days* remaining to vote on proposal';
+          description = '👉 Hey you! 👈 There are <i>3 days</i> remaining to vote on proposal';
           if (unchained.length > 0) show_unchained = true;
           storedAlerts[item._id] = 3;
         } else if (blocksRemaining < 720 && blocksRemaining > 670) {
           if (storedAlerts[item._id] === 1) return;
-          description = '⚠ Warning! ⚠ There is only *1 day* remaining to vote on proposal';
+          description = '⚠ Warning! ⚠ There is only <i>1 day</i> remaining to vote on proposal';
           if (unchained.length > 0) show_unchained = true;
           storedAlerts[item._id] = 1;
         } else if (blocksRemaining < 360 && blocksRemaining > 310) {
           if (storedAlerts[item._id] === 0.5) return;
-          description = '‼ Alert! ‼ There are only *12 hours* remaining to vote on proposal';
+          description = '‼ Alert! ‼ There are only <i>12 hours</i> remaining to vote on proposal';
           if (unchained.length > 0) show_unchained = true;
           storedAlerts[item._id] = 0.5;
         } else if (blocksRemaining <= 7) {
@@ -592,7 +661,7 @@ setInterval(async () => {
         // Send message
         msg_text += `<b><a href="https://www.cyberrepublic.org/proposals/${item._id}">${item.title}</a></b>\n`;
         msg_text += `<b>${description}</b>\n<b>Proposed by</b>: ${item.proposedBy}\n`;
-        msg_text += `<b>Current Voting Status</b>:\n${voting_status}\n`;
+        msg_text += `<b>Voting Status</b>:\n${voting_status}`;
         if (show_unchained) msg_text += `⚠ <b>Not Chained Yet</b>\n${unchainedList}`;
         if (show_undecided) {
           if (undecidedList.length > 0) {
@@ -603,9 +672,9 @@ setInterval(async () => {
         }
         if (show_failed) {
           if (failedList.length > 0) {
-            msg_text += `⛔️ <b>Failed to vote</b>\n${failedList}`;
+            msg_text += `\n⛔️ <b>Failed to vote</b>\n${failedList}`;
           } else {
-            msg_text += `✅ <b>Voting</b>\n${all_voted}`;
+            msg_text += `\n✅ <b>Voting</b>\n${all_voted}`;
           }
         }
         bot.sendMessage(dev ? test_grp:crc_group, msg_text, { parse_mode: "HTML" });
@@ -660,10 +729,20 @@ async function blockHeight() {
   return height;
 }
 
-async function getCRCs(type) {
-  let crc_params = {
-    method: type      
-  };
+async function getData(type) {
+  let crc_params = "";
+  if (type == "listcrproposalbasestate") {
+    crc_params = {
+      method: type,
+      params: {
+        "state": "registered"
+      }
+    };
+  } else {
+    crc_params = {
+      method: type      
+    };
+  }
   
   const crc_request = await fetchWithTimeout(api_official, {
     timeout: 6000,
@@ -677,4 +756,53 @@ async function getCRCs(type) {
   .then(json => crc = json.result)
   .catch (err => console.log(`Error in ${type}`));
   return crc;
+}
+
+async function getDID(_did) {
+  let api_params = {
+    id: null,
+    method: "did_resolveDID",
+    params: [{
+      did: `did:elastos:${_did}`,
+    }]
+  }
+  
+  const request = await fetchWithTimeout(eid_official, {
+    timeout: 6000,
+    method: 'POST',
+    body: JSON.stringify(api_params),
+    headers: {
+        'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(json => crc = json.result)
+  .catch (err => console.log(`Error in ${type}`));  
+  return crc;
+}
+
+async function getName(_did) {
+  let response = await getDID(_did);
+  let name = '';
+  try {
+    let buff = new Buffer.from(response.transaction[0].operation.payload, 'base64');
+    let payload = buff.toString();
+    let payload_arr = JSON.parse(payload);
+    
+    let field = payload_arr.verifiableCredential.length - 1;
+    name = payload_arr.verifiableCredential[field].credentialSubject.name;
+  } catch {
+    name = _did;
+  }
+  
+  return name;
+}
+
+function getCRC(_id, _field) {
+  let arr_found = crc_members.find(crc_member => crc_member.cr_id === _id);
+  let value = 'Unknown';
+  if (arr_found) {            
+    value = arr_found[_field];
+  }
+  return value;
 }
