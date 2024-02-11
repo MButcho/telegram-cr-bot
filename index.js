@@ -1,5 +1,5 @@
 const TelegramBot = require("node-telegram-bot-api");
-const fs = require("fs");
+//const fs = require("fs");
 //const token = fs.readFileSync(".access").toString().trim();
 const { token, dev, test_grp, crc_group } = require('./config.json');
 const { crc_members, crc_sec } = require('./council.json');
@@ -19,7 +19,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.6.0";
+const ver = "v1.6.1";
 const api_official = "https://api.elastos.io/ela";
 const eid_official = "https://api.elastos.io/eid";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
@@ -55,6 +55,7 @@ bot.onText(/\/ping/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `Ping command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   
   days = Math.floor(seconds_since_start / (60 * 60 * 24));
   hours = Math.floor((seconds_since_start % (60 * 60 * 24)) / (60 * 60));
@@ -71,7 +72,7 @@ bot.onText(/\/ping/, async (msg, data) => {
   if (next_loop_secs.length === 1) next_loop_secs = "0"+next_loop_secs;
   
   let msg_text = `<b>Bot running for:</b> ${days} days, ${hours} hours, ${minutes} minutes\n\n<b>Next automatic proposals check:</b> ${next_loop_mins}:${next_loop_secs} mins\n<b>Bot start:</b> ${start_date} UTC\n<b>Elastos block height:</b> ${height}\n<b>Source code:</b> <a href="https://github.com/MButcho/telegram-cr-bot">CRC Telegram Bot ${ver}</a>\n\u200b`;
-  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
 });
 
 bot.onText(/\/halving/, async (msg, data) => {
@@ -79,6 +80,7 @@ bot.onText(/\/halving/, async (msg, data) => {
  
   console.log((show_date ? command_date + " ":"") + `Halving command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   
   const halvingBlocks = 1051200;
   height = await blockHeight();
@@ -105,7 +107,7 @@ bot.onText(/\/halving/, async (msg, data) => {
   }
   
   msg_text += `\n<b>ELA emission</b>\n<b>Until 12/2025</b>: 400 000 ELA / Year = ~1.52 ELA / 2 mins\n<b>Rewards are split</b>: 35% PoW Miners / 35% BPoS Nodes / 30% CR`;
-  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
 });
 
 bot.onText(/\/bpos/, async (msg, data) => {
@@ -113,6 +115,7 @@ bot.onText(/\/bpos/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `BPoS command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   
   const bposBlocks = 1405000;
   const reqVotes = 80000;
@@ -182,7 +185,7 @@ bot.onText(/\/bpos/, async (msg, data) => {
   msg_text += `<b>BPoS Initiation</b>\nBPoS was initiated on block ${bposBlocks}\nCurrent block: ${block_height}`;
   // Cyber Republic - Refactoring https://www.cyberrepublic.org/proposals/5fe404ea7b3b430078ea4866'
   
-  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
 });
 
 bot.onText(/\/election/, async (msg, data) => {
@@ -190,6 +193,7 @@ bot.onText(/\/election/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `Election command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
 
   const councilTerm = 262800;
   const firstCouncil = 658930;
@@ -298,7 +302,7 @@ bot.onText(/\/election/, async (msg, data) => {
     msg_text += `<b>CR Election</b>${err_msg}`;
   }
   
-  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
 });
 
 bot.onText(/\/council/, async (msg, data) => {
@@ -306,6 +310,7 @@ bot.onText(/\/council/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `Council command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   
   const councilTerm = 262800;
   const firstCouncil = 658930;
@@ -355,7 +360,7 @@ bot.onText(/\/council/, async (msg, data) => {
     msg_text += `Current CR council ${err_msg}`;
   }
   
-  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+  bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
 });
 
 
@@ -364,6 +369,7 @@ bot.onText(/\/proposals/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `Proposals command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
 
   const res = await fetch(api_proposals);
   const proposalList = await res.json();
@@ -454,13 +460,13 @@ bot.onText(/\/proposals/, async (msg, data) => {
       
       // display in 9 proposals batches
       if (active.length < 9 || index % max_proposals === 0) {
-        bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+        bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
         msg_text = "";
       }
     });
   } else {
     msg_text += `<b>There are currently no proposals in the council voting period</b>`;
-    bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+    bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
   }  
 });
 
@@ -469,6 +475,7 @@ bot.onText(/\/proposals/, async (msg, data) => {
   
   console.log((show_date ? command_date + " ":"") + `Proposals command triggered`);
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   
   height = await blockHeight();
   
@@ -537,13 +544,13 @@ bot.onText(/\/proposals/, async (msg, data) => {
       
       // display in 9 proposals batches
       if (proposals.proposalbasestates.length < 9 || index % max_proposals === 0) {
-        bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+        bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
         msg_text = "";
       }
     });
   } else {
     msg_text += `<b>There are currently no proposals in the council voting period</b>`;
-    bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true });
+    bot.sendMessage(chatId, msg_text, { parse_mode: "HTML", disable_web_page_preview: true, reply_to_message_id: messageId});
   }
 });*/
 
