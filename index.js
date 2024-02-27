@@ -162,7 +162,7 @@ bot.onText(/\/bpos/, async (msg, data) => {
         bpos_count_0 = bpos_count_0 + 1;
       }
     
-    } else {
+    } else if (state == "Inactive") {
       bpos_count_inactive = bpos_count_inactive + 1;
       bpos_inactive += nickname + "\n"
     }
