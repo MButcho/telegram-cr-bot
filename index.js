@@ -20,8 +20,8 @@ let check_interval = check_mins * 60 * 1000;
 
 // basic variables
 const ver = "v1.6.1";
-//const api_official = "https://api.elastos.io/ela";
-const api_official = " https://api.elasafe.com/ela";
+const api_official = "https://api.elastos.io/ela";
+//const api_official = " https://api.elasafe.com/ela";
 const eid_official = "https://api.elastos.io/eid";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
 let connection_ok = true;
