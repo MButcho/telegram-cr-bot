@@ -19,7 +19,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.6.1";
+const ver = "v1.6.2";
 const api_official = "https://api.elastos.io/ela";
 //const api_official = " https://api.elasafe.com/ela";
 const eid_official = "https://api.elastos.io/eid";
@@ -248,8 +248,12 @@ bot.onText(/\/election/, async (msg, data) => {
       candidates = await getData("listcrcandidates");
       if (candidates.totalcounts > 0) {
         candidates.crcandidatesinfo.forEach((candidate) => {
-          let output = codes.filter(a => a.code == candidate.location);          
-          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i> -- <b>${parseFloat(candidate.votes).toLocaleString("en", {
+          let output = codes.filter(a => a.code == candidate.location);
+          let location_name = "-";
+          if (output.length > 0) {
+            location_name = output[0].name;
+          }
+          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${location_name}) <i><a href="${candidate.url}">web</a></i> -- <b>${parseFloat(candidate.votes).toLocaleString("en", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
           })}</b>` + "\n";
@@ -267,7 +271,11 @@ bot.onText(/\/election/, async (msg, data) => {
       if (candidates.totalcounts > 0) {
         candidates.crmembersinfo.forEach((candidate) => {
           let output = codes.filter(a => a.code == candidate.location);
-          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i>\n`;
+          let location_name = "-";
+          if (output.length > 0) {
+            location_name = output[0].name;
+          }
+          ranks += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${location_name}) <i><a href="${candidate.url}">web</a></i>\n`;
         });
       } else {
         ranks = "No candidate available yet";
@@ -347,8 +355,11 @@ bot.onText(/\/council/, async (msg, data) => {
     crc.crmembersinfo.forEach((candidate) => {
       // crcs = crcs + "{0:<20} {1}".format(key, value) + "\n"
       let output = codes.filter(a => a.code == candidate.location);      
-      
-      crcs += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${output[0].name}) <i><a href="${candidate.url}">web</a></i>\n`;
+      let location_name = "-";
+      if (output.length > 0) {
+        location_name = output[0].name;
+      }
+      crcs += `<b>${candidate.index+1}.</b> ${candidate.nickname} (${location_name}) <i><a href="${candidate.url}">web</a></i>\n`;
     });
     
   }
