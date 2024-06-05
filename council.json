@@ -17,8 +17,8 @@
     "cr_id" : "62a97bb904223900785a5897"
   },{
     "did" : "idgYYMcKBBFJ4DtGZ57w9psrUW4hkNsfDd",
-    "nickname" : "PG BAO",
-    "t_uname" : "@PGtheGreat",
+    "nickname" : "PG",
+    "t_uname" : "@BAO1573",
     "cr_id" : "5d14716f43816e009415219b"
   },{
     "did" : "icaVPz8nY7Y7LKjpJxmzWxCG5F3CEV6hnt",
@@ -32,9 +32,8 @@
     "cr_id" : "5bbbb9df9f6fb200897971b2"
   },{
     "did" : "inpCykPj1JMroJfjFvDAGnEGUCGGG3ptwQ",
-    "nickname" : "Elacity Official",
+    "nickname" : "Sash | Elacity 🐘",
     "t_uname" : "@sash_mit",
-    "//cr_id" : "5b4e46dbccac490035e4072f",
     "cr_id" : "62b1dc7304223900785aabc2"
   },{
     "did" : "ifFGHBuoAbT4Hk6uHn8vsQn5et7KExyMUZ",
@@ -52,15 +51,50 @@
     "t_uname" : "@ZehuaJiang",
     "cr_id" : "648b0bcfb4fcd00078666547"
   },{
-    "did" : "iXwDRYbriH9Zt4Haj5m3CGbNrbMUo1yusQ",
-    "nickname" : "tyrolee8848",
-    "t_uname" : "@Tyro_Lee",
-    "cr_id" : "648b1e537674cf0078402c6b"
-  },{
     "did" : "in1aUKA5WfqdD6S2DAatBEKwJ3om98J2PR",
     "nickname" : "ⓗwΞdini • 4HM3D",
     "t_uname" : "@ELA_2822 & @ahm333d",
     "cr_id" : "646f44e4b4fcd0007865382c"
+  },{
+    "did" : "iibrtTK8Fh689aJXFdT6v8o8RVDTjQ63XV",
+    "nickname" : "Jon Hargreaves & Roger Darashah",
+    "t_uname" : "@jonharges",
+    "cr_id" : "6665a4002cb5870078170d31"
+  },{
+    "did" : "iizCoA5iCYncEUT2HAg3YzF7wNzXukK53W",
+    "nickname" : "Strawberry Republic",
+    "t_uname" : "@Sir_Kahuna & @VegasMike777",
+    "cr_id" : "6660637c4032a100788c7ca3"
+  },{
+    "did" : "ioz23ma44KbHjDuYAuLbK1Pu2sJfth8vrx",
+    "nickname" : "Iggispopis CRC",
+    "t_uname" : "@Iggispopis",
+    "cr_id" : "6660c0ab2cb587007816db8f"
+  },{
+    "did" : "iWggkwrxoHhUg5GPMYbVgi3xYnXoHE8UNf",
+    "nickname" : "WoW Africa: Lili Felix, Hannah West, Ian Anderson",
+    "t_uname" : "@Workhorse_Ian & @lilifelix",
+    "cr_id" : "6664afb04032a100788ca738"
+  },{
+    "did" : "if2F3BWJYjWMFBc9gp8TMqbiKCBiWaLzUX",
+    "nickname" : "chen2rong2",
+    "t_uname" : "@ChenRong",
+    "cr_id" : "6663549c4032a100788c9a70"
+  },{
+    "did" : "iiF9hYDibTg9V2iQEHhrqCtxeUnt1irmBh",
+    "nickname" : "Tyro and his friends",
+    "t_uname" : "@Tyro_Lee",
+    "cr_id" : "6661028e2cb587007816de3e"
+  },{
+    "did" : "ifKdzEdQZwSeodTkzWvpcBw17WfMCAkYGj",
+    "nickname" : "Leo",
+    "t_uname" : "@leobtc8",
+    "cr_id" : "6662881a4032a100788c9345"
+  },{
+    "did" : "ipxqUngzMiAXyhoynRQBi1YeUNY8hqhoH8",
+    "nickname" : "Mark E. Blair, M.D.",
+    "t_uname" : "@MarkEBlairMD",
+    "cr_id" : "5c97ab41c174e60094ce557d"
   }],
   "crc_sec": {
     "did" : "ijQQKQuLPaAGewBQdHuhp9G3gsuJeqAXu8",
