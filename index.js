@@ -19,7 +19,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.6.2";
+const ver = "v1.6.3";
 const api_official = "https://api.elastos.io/ela";
 //const api_official = " https://api.elasafe.com/ela";
 const eid_official = "https://api.elastos.io/eid";
@@ -426,16 +426,18 @@ bot.onText(/\/proposals/, async (msg, data) => {
       //let vote_log = '';
       item.voteResult.forEach((vote) => {
         //console.log(JSON.stringify(vote));
-        if (vote.value === "support" && vote.status === "chained") support++;
-        if (vote.value === "reject" && vote.status === "chained") reject++;
+        if (vote.value === "support") support++;
+        if (vote.value === "reject") reject++;
+        if (vote.value === "abstention") abstention++;
         if (vote.value === "undecided") {
           undecided++;
           undecideds.push(vote.votedBy);
         }
-        if (vote.value === "abstention" && vote.status === "chained") abstention++;
+        
         if (vote.value !== "undecided" && vote.status === "unchain") {
-          let value = getCRC(vote.votedBy, "nickname");
-          unchained.push(`${value} voted ${vote.value} but did not chain the vote`);
+          let t_uname = getCRC(vote.votedBy, "t_uname");
+          let nickname = getCRC(vote.votedBy, "nickname");
+          unchained.push(`<b>${t_uname}</b> (${vote.value})`);
         }
         
         //let test_txt = getCRC(vote.votedBy, "nickname");
@@ -443,31 +445,35 @@ bot.onText(/\/proposals/, async (msg, data) => {
       });
       //console.log(vote_log);
       let unchainedList = '';
-        if (unchained.length > 0) {
+      if (unchained.length > 0) {
         unchained.forEach((warning) => {
-          unchainedList += `${warning}\n`
+          unchainedList += `${warning}\n`;
         });
       };
       
       let undecidedList = '';
       if (undecideds.length !== 0) {
         undecideds.forEach((member) => {
-          let value = getCRC(member, "t_uname");
-          undecidedList += `${value}\n`;          
+          let t_uname = getCRC(member, "t_uname");
+          undecidedList += `${t_uname}\n`;          
         });
       };
               
       let voting_status = `✅  Support - <b>${support}</b>\n❌  Reject - <b>${reject}</b>\n🔘  Abstain - <b>${abstention}</b>\n⚠  Undecided - <b>${undecided}</b>\n\u200b`;
       
-      if (unchained.length = 0) voting_status += '\u200b';
+      if (unchained.length == 0) voting_status += '\u200b';
       //proposals += `<i><a href='https://www.cyberrepublic.org/proposals/${item._id}'>View on Cyber Republic website</a></i>`;
       msg_text += `<b>Voting Status:</b>\n${voting_status}`; 
       if (undecidedList.length > 0) {
         msg_text += `\n⚠ <b>Not Voted Yet:</b>\n${undecidedList}`;
       } else {
-        msg_text += `\n✅ <b>Voting</b>\n${all_voted}`;
+         if (unchained.length > 0) {
+          msg_text += `\n⚠ <b>Not Chained</b> ⚠\n${unchainedList}`;
+        } else {
+          msg_text += `\n✅ <b>Voting</b>\n${all_voted}`;
+        }
       }
-      if (unchained.length > 0) msg_text += `⚠ <b>Not Chained</b> ⚠\n${unchainedList}`;
+     
       msg_text += "\n";
       
       // display in 9 proposals batches
@@ -603,16 +609,18 @@ setInterval(async () => {
         let msg_text = "";
 
         item.voteResult.forEach((vote) => {
-          if (vote.value === "support" && vote.status === "chained") support++;
-          if (vote.value === "reject" && vote.status === "chained") reject++;
+          if (vote.value === "support") support++;
+          if (vote.value === "reject") reject++;
+          if (vote.value === "abstention") abstention++;
           if (vote.value === "undecided") {
             undecided++;
             undecideds.push(vote.votedBy);
           }
-          if (vote.value === "abstention" && vote.status === "chained") abstention++;
+          
           if (vote.value !== "undecided" && vote.status === "unchain") {
-            let value = getCRC(vote.votedBy, "nickname");
-            unchained.push(`${value} voted ${vote.value} but did not chain the vote`);
+            let t_uname = getCRC(vote.votedBy, "t_uname");
+            let nickname = getCRC(vote.votedBy, "nickname");
+            unchained.push(`<b>${t_uname}</b> (${vote.value})`);
           }
         });
         
@@ -621,7 +629,7 @@ setInterval(async () => {
         let unchainedList = '';
         if (unchained.length > 0) {
           unchained.forEach((warning) => {
-            unchainedList += `${warning}\n`
+            unchainedList += `${warning}\n`;
           });
         }
         let undecidedList = '';
