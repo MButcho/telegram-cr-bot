@@ -19,7 +19,7 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.6.3";
+const ver = "v1.6.4";
 const api_official = "https://api.elastos.io/ela";
 //const api_official = " https://api.elasafe.com/ela";
 const eid_official = "https://api.elastos.io/eid";
@@ -717,7 +717,7 @@ setInterval(async () => {
       //console.log((show_date ? loop_date + " ":"") + `Loop - No proposals active [${height}]`);
     }
     //loop_date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    console.log((show_date ? loop_date + " ":"") + `Loop - Finished, active proposals [${active.length}], height [${height}]`);
+    //console.log((show_date ? loop_date + " ":"") + `Loop - Finished, active proposals [${active.length}], height [${height}]`);
   }
 }, check_interval);
 

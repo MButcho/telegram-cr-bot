@@ -29,6 +29,6 @@ node index.js
 ```
 # Donations
 
-Any donation to BTC LN address **tipme@walletofsatoshi.com** or ELA address **EJfW2mCdZPVxHVEv891xDop7hJAsYbKH5R** will be appreciated.
+Any donation to BTC LN address **tipme@walletofsatoshi.com** will be appreciated!
 
 ### Thank you and enjoy!
