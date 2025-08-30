@@ -1,7 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 //const fs = require("fs");
 //const token = fs.readFileSync(".access").toString().trim();
-const { token, dev, test_grp, crc_group } = require('./config.json');
+const { token, dev, test_grp, crc_group, ignore_nodes } = require('./config.json');
 const { crc_members, crc_sec } = require('./council.json');
 const codes = require('./codes.json');
 const fetch = require("node-fetch");
@@ -152,22 +152,23 @@ bot.onText(/\/bpos/, async (msg, data) => {
     let state = producer.state;
     let nickname = producer.nickname;
     
-    if (state == "Active") {
-      if (parseInt(dposv2votes) > reqVotes) {
-        bpos_count_80 = bpos_count_80 + 1;
-      } else if (parseInt(dposv2votes) > reqVotes/2) {
-        bpos_count_40 = bpos_count_40 + 1;
-      }  else if (parseInt(dposv2votes) > reqVotes/4) {
-        bpos_count_20 = bpos_count_20 + 1;
-      } else {
-        bpos_count_0 = bpos_count_0 + 1;
+    if (!ignore_nodes.includes(nickname)) {
+      if (state == "Active") {
+        if (parseInt(dposv2votes) > reqVotes) {
+          bpos_count_80 = bpos_count_80 + 1;
+        } else if (parseInt(dposv2votes) > reqVotes/2) {
+          bpos_count_40 = bpos_count_40 + 1;
+        }  else if (parseInt(dposv2votes) > reqVotes/4) {
+          bpos_count_20 = bpos_count_20 + 1;
+        } else {
+          bpos_count_0 = bpos_count_0 + 1;
+        }
+      
+      } else if (state == "Inactive") {
+        bpos_count_inactive = bpos_count_inactive + 1;
+        bpos_inactive += nickname + "\n"
       }
-    
-    } else if (state == "Inactive") {
-      bpos_count_inactive = bpos_count_inactive + 1;
-      bpos_inactive += nickname + "\n"
     }
-    
   });
   
   bpos_count = bpos_count_80 + bpos_count_40 + bpos_count_20 + bpos_count_0
