@@ -19,10 +19,10 @@ if (dev) {
 let check_interval = check_mins * 60 * 1000;
 
 // basic variables
-const ver = "v1.6.4";
-//const api_official = "https://api.elastos.io/ela";
-const api_official = " https://api.elasafe.com/ela";
-const eid_official = "https://api.elastos.io/eid";
+const ver = "v1.6.5";
+//const api_ela = "https://api.elastos.io/ela";
+const api_ela = " https://api.elasafe.com/ela";
+const api_eid = "https://api.elastos.io/eid";
 const api_proposals = "https://api.cyberrepublic.org/api/cvote/list_public?voteResult=all";
 let connection_ok = true;
 const err_msg = "API is currently in down, please try again later ...";
@@ -134,7 +134,7 @@ bot.onText(/\/bpos/, async (msg, data) => {
     params: {"state": "all", "identity":"v2"},
   };
   
-  const bpos_request = await fetch(api_official, {
+  const bpos_request = await fetch(api_ela, {
     method: 'POST',
     body: JSON.stringify(bpos),
     headers: {
@@ -742,7 +742,7 @@ async function blockHeight() {
     method: 'getcurrentheight'      
   };
   
-  const height_request = await fetchWithTimeout(api_official, {
+  const height_request = await fetchWithTimeout(api_ela, {
     timeout: 6000,
     method: 'POST',
     body: JSON.stringify(height_params),
@@ -772,7 +772,7 @@ async function getData(type) {
     };
   }
   
-  const crc_request = await fetchWithTimeout(api_official, {
+  const crc_request = await fetchWithTimeout(api_ela, {
     timeout: 6000,
     method: 'POST',
     body: JSON.stringify(crc_params),
@@ -795,7 +795,7 @@ async function getDID(_did) {
     }]
   }
   
-  const request = await fetchWithTimeout(eid_official, {
+  const request = await fetchWithTimeout(api_eid, {
     timeout: 6000,
     method: 'POST',
     body: JSON.stringify(api_params),
